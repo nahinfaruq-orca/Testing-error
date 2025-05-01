@@ -1,0 +1,30 @@
+name: Vulnerable Docker Build and Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  docker-build-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker Image (Insecure)
+        run: docker build -t insecure-app:latest .
+
+      - name: Install Trivy Scanner
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+
+      - name: Scan Docker Image with Trivy
+        run: |
+          trivy image --exit-code 1 --severity HIGH,CRITICAL insecure-app:latest
