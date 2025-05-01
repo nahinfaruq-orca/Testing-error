@@ -1,23 +1,23 @@
-# Use an outdated and unsupported base image
-FROM python:3.6-slim
+# ⚠️ Deliberately vulnerable base image (many known CVEs)
+FROM python:3.6.5-slim
 
-# Set working directory (but not securely)
-WORKDIR /app
+# Set working directory
+WORKDIR /usr/src/app
 
-# Copy all files without a .dockerignore (includes secrets if present)
+# Copy everything (unsafe without .dockerignore)
 COPY . .
 
-# Install dependencies without pinning versions (leads to reproducible issues)
+# Install pip packages without version pinning (unsafe)
 RUN pip install -r requirements.txt
 
-# Add a secret directly into the environment (bad practice)
-ENV APP_SECRET="insecure_hardcoded_secret"
+# Hardcoded sensitive value
+ENV SECRET_KEY="ThisIsASecretKey"
 
-# Run as root (default behavior — not secure)
+# Run the container as root (default, insecure)
 USER root
 
-# Expose internal port without firewall or authentication
+# Expose a port to the outside world
 EXPOSE 5000
 
-# Run the app using an insecure command
+# Run insecurely without entrypoint or process manager
 CMD ["python", "app.py"]
