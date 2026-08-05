@@ -1,0 +1,37 @@
+name: Orca Container Image Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  image-scan:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: orca-test-image
+      PROJECT_KEY: nahinfaruq-orca-Testing-error
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${IMAGE_NAME}:latest .
+
+      - name: Verify Docker image
+        run: |
+          docker images
+
+      - name: Install Orca CLI
+        run: |
+          curl -sfL https://raw.githubusercontent.com/orcasecurity/orca-cli/main/install.sh | bash
+          orca-cli --version
+
+      - name: Scan image with Orca
+        env:
+          ORCA_SECURITY_API_TOKEN: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
+        run: |
+          orca-cli --verbose \
+            -p "${PROJECT_KEY}" \
+            image scan ${IMAGE_NAME}:latest
