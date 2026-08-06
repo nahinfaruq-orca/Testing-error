@@ -31,7 +31,11 @@ jobs:
           curl -sfL https://raw.githubusercontent.com/orcasecurity/orca-cli/main/install.sh | bash
           orca-cli --version
 
-      -  name: Scan image with Orca
+      - name: Verify Orca CLI Scan Command
+        run: |
+          orca-cli image scan --help
+
+      - name: Scan image with Orca
         env:
           ORCA_SECURITY_API_TOKEN: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
         run: |
