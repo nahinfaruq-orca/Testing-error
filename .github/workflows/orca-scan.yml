@@ -24,7 +24,7 @@ jobs:
 
       - name: Verify Docker image
         run: |
-          docker images
+          docker images ${IMAGE_NAME}
 
       - name: Install Orca CLI
         run: |
@@ -37,5 +37,4 @@ jobs:
         run: |
           orca-cli image scan \
             -p "${PROJECT_KEY}" \
-            ${IMAGE_NAME}:latest \
-            --verbose
+            ${IMAGE_NAME}:latest
